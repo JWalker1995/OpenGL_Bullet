@@ -1,0 +1,59 @@
+Using Glfw with Qt:
+
+Download Glfw source from http://superb-dca3.dl.sourceforge.net/project/glfw/glfw/2.7.6/glfw-2.7.6.zip
+Extract, cd to it.
+Run "mingw32-make win32-mingw"
+Add lib/win32/libglfw.a and lib/win32/libglfwdll.a to compiler lib folder (C:\QtSDK\mingw\lib)
+Add include/GL/glfw.h to compiler include folder (C:\QtSDK\mingw\include\GL)
+
+Qt config file:
+
+TEMPLATE = app
+CONFIG -= qt
+
+SOURCES += main.cpp
+
+LIBS = -lglfw -lopengl32
+
+
+main.cpp:
+
+#include <GL/glfw.h>
+#include <stdlib.h>
+int main( void )
+{
+    int running = GL_TRUE;
+    // Initialize GLFW
+    if( !glfwInit() )
+    {
+        exit( EXIT_FAILURE );
+    }
+
+    int nummodes;
+    GLFWvidmode list[ 200 ];
+    nummodes = glfwGetVideoModes( list, 200 );
+
+    // Open an OpenGL window
+    glfwOpenWindowHint(GLFW_WINDOW_NO_RESIZE, GL_TRUE);
+    if( !glfwOpenWindow( 500, 500, 0,0,0,0,0,0, GLFW_WINDOW ) )
+    {
+        glfwTerminate();
+        exit( EXIT_FAILURE );
+    }
+    glfwSetWindowTitle("My Awesome Window\0");
+    // Main loop
+    while( running )
+    {
+        // OpenGL rendering goes here...
+        glClear( GL_COLOR_BUFFER_BIT );
+        // Swap front and back rendering buffers
+        glfwSwapBuffers();
+        // Check if ESC key was pressed or window was closed
+        running = !glfwGetKey( GLFW_KEY_ESC ) &&
+        glfwGetWindowParam( GLFW_OPENED );
+    }
+    // Close window and terminate GLFW
+    glfwTerminate();
+    // Exit program
+    exit( EXIT_SUCCESS );
+}
