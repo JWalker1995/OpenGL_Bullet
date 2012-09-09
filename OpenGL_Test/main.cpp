@@ -1,4 +1,6 @@
 #include <GL/glfw.h>
+#include "btBulletDynamicsCommon.h"
+
 #include <stdlib.h>
 #include <iostream>
 
@@ -49,50 +51,75 @@ int main( void )
     f2.waitForBytesWritten(1000);
     f2.close();
 
-    /*
-    static const GLfloat g_vertex_buffer_data[] = {
-       -1.0f, -1.0f, 0.0f,
-       1.0f, -1.0f, 0.0f,
-       0.0f,  1.0f, 0.0f,
-    };
+    glClearColor(0,0,0,0);
+    //glShadeModel(GL_SMOOTH);
 
+    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
 
-    // This will identify our vertex buffer
-    GLuint vertexbuffer;
+    double phase = 0.0;
 
-    // Generate 1 buffer, put the resulting identifier in vertexbuffer
-    glGenBuffers(1, &vertexbuffer);
-
-    // The following commands will talk about our 'vertexbuffer' buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-
-    // Give our vertices to OpenGL.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-*/
     // Main loop
     while( running )
     {
-        // OpenGL rendering goes here...
-        glClear( GL_COLOR_BUFFER_BIT );
+        phase += 0.01;
 
-        /*
-        // 1rst attribute buffer : vertices
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-        glVertexAttribPointer(
-           0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-           3,                  // size
-           GL_FLOAT,           // type
-           GL_FALSE,           // normalized?
-           0,                  // stride
-           (void*)0            // array buffer offset
-        );
+        glViewport(0, 0, 500, 500);
 
-        // Draw the triangle !
-        glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glFrustum(-1, 1, -1, 1, 1.5, 100);
+        glMatrixMode(GL_MODELVIEW);
 
-        glDisableVertexAttribArray(0);
-        */
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glLoadIdentity();
+        gluLookAt(10 + sin(phase)*10, 10 + cos(phase) * 10, 10, 0, 0, 0, 0, 1, 0);
+        glBegin(GL_QUADS);
+
+        //face in xy plane
+        glColor3f(0.82, 0.41, 0.12);
+        glVertex3f(0, 0, 0);
+        glVertex3f(5, 0, 0);
+        glVertex3f(5, 5, 0);
+        glVertex3f(0, 5, 0);
+
+        //face in yz plane
+        glColor3f(1, 0, 0);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, 5);
+        glVertex3f(0, 5, 0);
+        glVertex3f(0, 5, 5);
+
+        //face in zx plance
+        glColor3f(0, 1, 0);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, 5);
+        glVertex3f(5, 0, 5);
+        glVertex3f(5, 0, 0);
+
+        //|| to xy plane.
+        glColor3f(0, 0, 1);
+        glVertex3f(0, 0, 5);
+        glVertex3f(5, 0, 5);
+        glVertex3f(5, 5, 5);
+        glVertex3f(0, 5, 5);
+
+        //|| to yz plane
+        glColor3f(0.73, 0.58, 0.58);
+        glVertex3f(0, 0, 5 );
+        glVertex3f(5, 0, 5);
+        glVertex3f(5, 5, 5);
+        glVertex3f(0, 5, 5);
+
+        //|| to zx plane
+        glVertex3f(0.58, 0, 0.82);
+        glVertex3f(0, 5, 0);
+        glVertex3f(0, 5, 5);
+        glVertex3f(5, 5, 5);
+        glVertex3f(5, 5, 0);
+        glEnd();
+        glFlush();
 
         // Swap front and back rendering buffers
         glfwSwapBuffers();
@@ -100,7 +127,7 @@ int main( void )
         running = !glfwGetKey( GLFW_KEY_ESC ) &&
         glfwGetWindowParam( GLFW_OPENED );
 
-        glfwSleep(0.1);
+        glfwSleep(0.01);
     }
     // Close window and terminate GLFW
     glfwTerminate();
