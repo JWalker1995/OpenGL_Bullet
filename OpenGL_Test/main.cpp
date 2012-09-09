@@ -1,6 +1,8 @@
 #include <GL/glfw.h>
 #include "btBulletDynamicsCommon.h"
 
+#include "colladaloader.h"
+
 #include <stdlib.h>
 #include <iostream>
 
@@ -9,6 +11,9 @@
 
 int main( void )
 {
+    ColladaLoader* cl = new ColladaLoader("c:/Users/Joel/Desktop/cube.dae");
+    delete cl;
+
     int running = GL_TRUE;
     // Initialize GLFW
     if( !glfwInit() )
