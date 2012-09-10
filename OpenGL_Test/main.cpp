@@ -11,7 +11,7 @@
 
 int main( void )
 {
-    ColladaLoader* cl = new ColladaLoader("c:/Users/Joel/Desktop/cube.dae");
+    ColladaLoader* cl = new ColladaLoader("c:/dae_samples/cube.dae");
     delete cl;
 
     int running = GL_TRUE;

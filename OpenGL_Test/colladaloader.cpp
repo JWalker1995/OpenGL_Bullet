@@ -2,8 +2,7 @@
 
 #include "3rd_party/pugixml.hpp"
 
-http://www.everita.com/lightwave-collada-and-opengles-on-the-iphone
-http://www.gamedev.net/topic/547314-collada-and-opengl/
+#include <QFile>
 
 ColladaLoader::ColladaLoader(char* path)
 {
@@ -11,5 +10,11 @@ ColladaLoader::ColladaLoader(char* path)
 
     pugi::xml_parse_result result = doc.load_file(path);
 
-    std::cout << "Load result: " << result.description() << ", mesh name: " << doc.child("mesh").attribute("name").value() << std::endl;
+    QFile f2("test.txt");
+    f2.open(QIODevice::ReadWrite);
+    f2.write(doc.child("COLLADA").child("library_geometries").find_child_by_attribute("geometry", "name", "box").attribute("id").value());
+    f2.waitForBytesWritten(1000);
+    f2.close();
+
+    //std::cout << "Load result: " << result.description() << ", mesh name: " << doc.child("mesh").attribute("name").value() << std::endl;
 }
