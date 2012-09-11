@@ -4,7 +4,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     glmanager.cpp \
     3rd_party/pugixml.cpp \
-    colladaloader.cpp
+    colladaloader.cpp \
+    3rd_party/glew.c
 
 INCLUDEPATH += c:/bullet_280/src
 

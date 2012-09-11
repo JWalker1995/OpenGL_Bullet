@@ -6,7 +6,7 @@ class GlManager
 public:
     GlManager();
 
-
+    void init();
 };
 
 #endif // GLMANAGER_H
