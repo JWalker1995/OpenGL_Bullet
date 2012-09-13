@@ -78,10 +78,29 @@ GlManager::GlManager()
         //fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
         exit(err);
     }
+
+    GLuint vboId;                              // ID of VBO
+    GLfloat* vertices = new GLfloat[vCount*3]; // create vertex array
+    ...
+
+    // generate a new VBO and get the associated ID
+    glGenBuffersARB(1, &vboId);
+
+    // bind VBO in order to use
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, vboId);
+
+    // upload data to VBO
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, dataSize, vertices, GL_STATIC_DRAW_ARB);
+
+    // it is safe to delete after copying data to VBO
+    delete [] vertices;
+    ...
+
     //fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 }
 
-void GlManager::init()
+void GlManager::~GlManager()
 {
-
+    // delete VBO when program terminated
+    glDeleteBuffersARB(1, &vboId);
 }

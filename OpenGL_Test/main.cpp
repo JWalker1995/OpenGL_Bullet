@@ -11,11 +11,12 @@
 
 int main( void )
 {
-    GlManager gl;
-    gl.init();
+    GlManager gl;// Initiates opengl instance
 
     ColladaLoader* cl = new ColladaLoader("c:/dae_samples/cube.dae");
+
+    // Main loop
+
     delete cl;
-
-
+    delete gl;
 }
