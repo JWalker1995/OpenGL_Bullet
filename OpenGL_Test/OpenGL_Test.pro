@@ -5,7 +5,8 @@ SOURCES += main.cpp \
     3rd_party/pugixml.cpp \
     colladaloader.cpp \
     3rd_party/glew.c \
-    scenemanager.cpp
+    scenemanager.cpp \
+    rigidbody.cpp
 
 INCLUDEPATH += c:/bullet_280/src
 
@@ -15,4 +16,5 @@ LIBS = -lglu32 -lglfw -lopengl32 \
 HEADERS += \
     3rd_party/pugixml.hpp \
     colladaloader.h \
-    scenemanager.h
+    scenemanager.h \
+    rigidbody.h
