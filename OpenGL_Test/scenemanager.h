@@ -6,6 +6,10 @@ class SceneManager
 public:
     SceneManager();
     ~SceneManager();
+
+    void initGl();
+
+    void endGl();
 };
 
 #endif // SCENEMANAGER_H
