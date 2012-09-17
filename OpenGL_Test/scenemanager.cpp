@@ -10,6 +10,9 @@
 #include <iostream>
 
 
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+
+
 SceneManager::SceneManager()
 {
     initGl();
@@ -20,7 +23,7 @@ SceneManager::SceneManager()
     btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
 
     ///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
-    btCollisionDispatcher* dispatcher = new	btCollisionDispatcher(collisionConfiguration);
+    btCollisionDispatcher* dispatcher = new    btCollisionDispatcher(collisionConfiguration);
 
     ///btDbvtBroadphase is a good general purpose broadphase. You can also try out btAxis3Sweep.
     btBroadphaseInterface* overlappingPairCache = new btDbvtBroadphase();
@@ -75,7 +78,7 @@ SceneManager::SceneManager()
         btTransform startTransform;
         startTransform.setIdentity();
 
-        btScalar	mass(1.f);
+        btScalar    mass(1.f);
 
         //rigidbody is dynamic if and only if mass is non zero, otherwise static
         bool isDynamic = (mass != 0.f);
@@ -96,14 +99,15 @@ SceneManager::SceneManager()
 
     struct Vertex
     {
-        float x, y, z;        // Vertex
-        float nx, ny, nz;     // Normal
-        float s0, t0;         // Texcoord0
-        float s1, t1;         // Texcoord1
-        float s2, t2;         // Texcoord2
-        float padding[4];     // Make sure vertex size is a multiple of 16 (16 floats)
+        GLfloat x, y, z;    // Vertex
+        GLfloat nx, ny, nz; // Normal
+        GLfloat cr, cg, cb, ca; // Color
+        GLfloat tu0, tv0;   // Texcoord0
+        GLfloat tu1, tv1;   // Texcoord1
+        GLfloat tu2, tv2;   // Texcoord2
+        // Make sure sizeof(Vertex) is a multiple of 16
     };
-
+/*
     int num_verts = 8;
     Vertex* verts = new Vertex[num_verts];
 
@@ -117,7 +121,7 @@ SceneManager::SceneManager()
     verts[7].x =  1.0f; verts[7].y =  1.0f; verts[7].z =  1.0f;
 
     int num_indexes = 8;
-    short* indexes = new short[num_indexes];
+    GLushort* indexes = new GLushort[num_indexes];
 
     indexes[0] = 0;
     indexes[1] = 1;
@@ -127,24 +131,184 @@ SceneManager::SceneManager()
     indexes[5] = 5;
     indexes[6] = 6;
     indexes[7] = 7;
+*/
+
+    int num_verts = 24;
+    Vertex* verts = new Vertex[num_verts];
+
+    // Top
+    verts[0].x = 1; verts[0].y = 1; verts[0].z = -1;
+    verts[0].nx = 0; verts[0].ny = 1; verts[0].nz = 0;
+    verts[0].tu0 = 0; verts[0].tv0 = 0;
+
+    verts[1].x = -1; verts[1].y = 1; verts[1].z = -1;
+    verts[1].nx = 0; verts[1].ny = 1; verts[1].nz = 0;
+    verts[1].tu0 = 0; verts[1].tv0 = 1;
+
+    verts[2].x = -1; verts[2].y = 1; verts[2].z = 1;
+    verts[2].nx = 0; verts[2].ny = 1; verts[2].nz = 0;
+    verts[2].tu0 = 1; verts[2].tv0 = 1;
+
+    verts[3].x = 1; verts[3].y = 1; verts[3].z = 1;
+    verts[3].nx = 0; verts[3].ny = 1; verts[3].nz = 0;
+    verts[3].tu0 = 1; verts[3].tv0 = 0;
+
+    // Bottom
+    verts[4].x = 1; verts[4].y = -1; verts[4].z = 1;
+    verts[4].nx = 0; verts[4].ny = -1; verts[4].nz = 0;
+    verts[4].tu0 = 0; verts[4].tv0 = 0;
+
+    verts[5].x = -1; verts[5].y = -1; verts[5].z = 1;
+    verts[5].nx = 0; verts[5].ny = -1; verts[5].nz = 0;
+    verts[5].tu0 = 0; verts[5].tv0 = 1;
+
+    verts[6].x = -1; verts[6].y = -1; verts[6].z = -1;
+    verts[6].nx = 0; verts[6].ny = -1; verts[6].nz = 0;
+    verts[6].tu0 = 1; verts[6].tv0 = 1;
+
+    verts[7].x = 1; verts[7].y = -1; verts[7].z = -1;
+    verts[7].nx = 0; verts[7].ny = -1; verts[7].nz = 0;
+    verts[7].tu0 = 1; verts[7].tv0 = 0;
+
+    // Front
+    verts[8].x = 1; verts[8].y = 1; verts[8].z = 1;
+    verts[8].nx = 0; verts[8].ny = 0; verts[8].nz = 1;
+    verts[8].tu0 = 0; verts[8].tv0 = 0;
+
+    verts[9].x = -1; verts[9].y = 1; verts[9].z = 1;
+    verts[9].nx = 0; verts[9].ny = 0; verts[9].nz = 1;
+    verts[9].tu0 = 0; verts[9].tv0 = 1;
+
+    verts[10].x = -1; verts[10].y = -1; verts[10].z = 1;
+    verts[10].nx = 0; verts[10].ny = 0; verts[10].nz = 1;
+    verts[10].tu0 = 1; verts[10].tv0 = 1;
+
+    verts[11].x = 1; verts[11].y = -1; verts[11].z = 1;
+    verts[11].nx = 0; verts[11].ny = 0; verts[11].nz = 1;
+    verts[11].tu0 = 1; verts[11].tv0 = 0;
+
+    // Back
+    verts[12].x = 1; verts[12].y = -1; verts[12].z = -1;
+    verts[12].nx = 0; verts[12].ny = 0; verts[12].nz = -1;
+    verts[12].tu0 = 0; verts[12].tv0 = 0;
+
+    verts[13].x = -1; verts[13].y = -1; verts[13].z = -1;
+    verts[13].nx = 0; verts[13].ny = 0; verts[13].nz = -1;
+    verts[13].tu0 = 0; verts[13].tv0 = 1;
+
+    verts[14].x = -1; verts[14].y = 1; verts[14].z = -1;
+    verts[14].nx = 0; verts[14].ny = 0; verts[14].nz = -1;
+    verts[14].tu0 = 1; verts[14].tv0 = 1;
+
+    verts[15].x = 1; verts[15].y = 1; verts[15].z = -1;
+    verts[15].nx = 0; verts[15].ny = 0; verts[15].nz = -1;
+    verts[15].tu0 = 1; verts[15].tv0 = 0;
+
+    // Left
+    verts[16].x = -1; verts[16].y = 1; verts[16].z = 1;
+    verts[16].nx = -1; verts[16].ny = 0; verts[16].nz = 0;
+    verts[16].tu0 = 0; verts[16].tv0 = 0;
+
+    verts[17].x = -1; verts[17].y = 1; verts[17].z = -1;
+    verts[17].nx = -1; verts[17].ny = 0; verts[17].nz = 0;
+    verts[17].tu0 = 0; verts[17].tv0 = 1;
+
+    verts[18].x = -1; verts[18].y = -1; verts[18].z = -1;
+    verts[18].nx = -1; verts[18].ny = 0; verts[18].nz = 0;
+    verts[18].tu0 = 1; verts[18].tv0 = 1;
+
+    verts[19].x = -1; verts[19].y = -1; verts[19].z = 1;
+    verts[19].nx = -1; verts[19].ny = 0; verts[19].nz = 0;
+    verts[19].tu0 = 1; verts[19].tv0 = 0;
+
+    // Right
+    verts[20].x = 1; verts[20].y = 1; verts[20].z = -1;
+    verts[20].nx = 1; verts[20].ny = 0; verts[20].nz = 0;
+    verts[20].tu0 = 0; verts[20].tv0 = 0;
+
+    verts[21].x = 1; verts[21].y = 1; verts[21].z = 1;
+    verts[21].nx = 1; verts[21].ny = 0; verts[21].nz = 0;
+    verts[21].tu0 = 0; verts[21].tv0 = 1;
+
+    verts[22].x = 1; verts[22].y = -1; verts[22].z = 1;
+    verts[22].nx = 1; verts[22].ny = 0; verts[22].nz = 0;
+    verts[22].tu0 = 1; verts[22].tv0 = 1;
+
+    verts[23].x = 1; verts[23].y = -1; verts[23].z = -1;
+    verts[23].nx = 1; verts[23].ny = 0; verts[23].nz = 0;
+    verts[23].tu0 = 1; verts[23].tv0 = 0;
+
+    // Colours
+    for (int i = 0; i < 24; i++)
+    {
+        verts[i].cr = 1.0;
+        verts[i].cg = 1.0;
+        verts[i].cb = 1.0;
+        verts[i].ca = 1.0;
+    }
+
+
+    int num_indexes = 36;
+    GLushort* indexes = new GLushort[num_indexes];
+
+    // Index Array (define our triangles)
+    // A Face looks like (numbers are the array index number of the vertex)
+    // 1      2
+    // +------+
+    // |      |
+    // |      |
+    // +------+
+    // 0      3
+    indexes[0] = 0; indexes[1] = 1; indexes[2] = 2;
+    indexes[3] = 2; indexes[4] = 3; indexes[5] = 0;
+
+    indexes[6] = 4; indexes[7] = 5; indexes[8] = 6;
+    indexes[9] = 6; indexes[10] = 7; indexes[11] = 4;
+
+    indexes[12] = 8; indexes[13] = 9; indexes[14] = 10;
+    indexes[15] = 10; indexes[16] = 11; indexes[17] = 8;
+
+    indexes[18] = 12; indexes[19] = 13; indexes[20] = 14;
+    indexes[21] = 14; indexes[22] = 15; indexes[23] = 12;
+
+    indexes[24] = 16; indexes[25] = 17; indexes[26] = 18;
+    indexes[27] = 18; indexes[28] = 19; indexes[29] = 16;
+
+    indexes[30] = 20; indexes[31] = 21; indexes[32] = 22;
+    indexes[33] = 22; indexes[34] = 23; indexes[35] = 20;
+
+
+
 
     int verts_size = sizeof(Vertex) * num_verts;
+    int indexes_size = sizeof(GLushort) * num_indexes;
 
     // generate a new VBO and get the associated ID
     GLuint verts_vbo;
     glGenBuffers(1, &verts_vbo);
-
-    // bind VBO in order to use
     glBindBuffer(GL_ARRAY_BUFFER, verts_vbo);
-
-    // upload data to VBO
     glBufferData(GL_ARRAY_BUFFER, verts_size, verts, GL_STATIC_DRAW);
 
+    GLuint indexes_vbo;
+    glGenBuffers(1, &indexes_vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexes_vbo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes_size, indexes, GL_STATIC_DRAW);
+
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
+    glPushMatrix();
+    glRotatef(0.0, 1.0, 1.0, 1.0);
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, verts_vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexes_vbo);
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, sizeof(Vertex), &verts[0].x);
+    glEnableClientState(GL_COLOR_ARRAY);
+    //glTexCoordPointer(2, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(sizeof(GLfloat) * 9));
+    //glNormalPointer(GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(sizeof(GLfloat) * 3));
+    glColorPointer(4, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(sizeof(GLfloat) * 6));
+    glVertexPointer(3, GL_FLOAT, sizeof(Vertex), BUFFER_OFFSET(sizeof(GLfloat) * 0));
     /*
     glEnableClientState(GL_NORMAL_ARRAY);
     glNormalPointer(GL_FLOAT, verts_size, &vertex[0].nx);
@@ -158,10 +322,18 @@ SceneManager::SceneManager()
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glTexCoordPointer(2, GL_FLOAT, verts_size, &vertex[0].s2);
     */
-    glDrawElements(GL_POINTS, num_verts, GL_UNSIGNED_SHORT, indexes);
+    glDrawElements(GL_TRIANGLES, num_verts, GL_UNSIGNED_SHORT, indexes);
+
+    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    //glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glPopMatrix();
 
     glFlush();
     glfwSwapBuffers();
+    glFlush();
 
     glfwSleep(5.0);
 
@@ -286,7 +458,7 @@ void SceneManager::initGl()
     //fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
+    //glClearColor(0.5f, 0.5f, 0.5f, 0.5f);
 }
 
 
