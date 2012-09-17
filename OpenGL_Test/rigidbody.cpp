@@ -1,5 +1,5 @@
 #include "rigidbody.h"
 
-RigidBody::RigidBody()
+RigidBody::RigidBody(const btRigidBodyConstructionInfo &info) : btRigidBody(info)
 {
 }

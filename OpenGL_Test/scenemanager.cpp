@@ -94,11 +94,92 @@ SceneManager::SceneManager()
             dynamicsWorld->addRigidBody(body);
     }
 
-    for (i=0;i<100;i++)
+    struct Vertex
     {
-        dynamicsWorld->stepSimulation(1.f/60.f,10);
+        float x, y, z;        // Vertex
+        float nx, ny, nz;     // Normal
+        float s0, t0;         // Texcoord0
+        float s1, t1;         // Texcoord1
+        float s2, t2;         // Texcoord2
+        float padding[4];     // Make sure vertex size is a multiple of 16 (16 floats)
+    };
+
+    int num_verts = 8;
+    Vertex* verts = new Vertex[num_verts];
+
+    verts[0].x = -1.0f; verts[0].y = -1.0f; verts[0].z = -1.0f;
+    verts[1].x = -1.0f; verts[1].y = -1.0f; verts[1].z =  1.0f;
+    verts[2].x = -1.0f; verts[2].y =  1.0f; verts[2].z = -1.0f;
+    verts[3].x = -1.0f; verts[3].y =  1.0f; verts[3].z =  1.0f;
+    verts[4].x =  1.0f; verts[4].y = -1.0f; verts[4].z = -1.0f;
+    verts[5].x =  1.0f; verts[5].y = -1.0f; verts[5].z =  1.0f;
+    verts[6].x =  1.0f; verts[6].y =  1.0f; verts[6].z = -1.0f;
+    verts[7].x =  1.0f; verts[7].y =  1.0f; verts[7].z =  1.0f;
+
+    int num_indexes = 8;
+    short* indexes = new short[num_indexes];
+
+    indexes[0] = 0;
+    indexes[1] = 1;
+    indexes[2] = 2;
+    indexes[3] = 3;
+    indexes[4] = 4;
+    indexes[5] = 5;
+    indexes[6] = 6;
+    indexes[7] = 7;
+
+    int verts_size = sizeof(Vertex) * num_verts;
+
+    // generate a new VBO and get the associated ID
+    GLuint verts_vbo;
+    glGenBuffers(1, &verts_vbo);
+
+    // bind VBO in order to use
+    glBindBuffer(GL_ARRAY_BUFFER, verts_vbo);
+
+    // upload data to VBO
+    glBufferData(GL_ARRAY_BUFFER, verts_size, verts, GL_STATIC_DRAW);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, sizeof(Vertex), &verts[0].x);
+    /*
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glNormalPointer(GL_FLOAT, verts_size, &vertex[0].nx);
+    glClientActiveTexture(GL_TEXTURE0);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(2, GL_FLOAT, verts_size, &vertex[0].s0);
+    glClientActiveTexture(GL_TEXTURE1);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(2, GL_FLOAT, verts_size), &vertex[0].s1);
+    glClientActiveTexture(GL_TEXTURE2);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(2, GL_FLOAT, verts_size, &vertex[0].s2);
+    */
+    glDrawElements(GL_POINTS, num_verts, GL_UNSIGNED_SHORT, indexes);
+
+    glFlush();
+    glfwSwapBuffers();
+
+    glfwSleep(5.0);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glDeleteBuffers(1, &verts_vbo);
+
+    while (false)
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        dynamicsWorld->stepSimulation(1.f / 60.f,10);
+
+
+
 
         //print positions of all objects
+        /*
         for (int j=dynamicsWorld->getNumCollisionObjects()-1; j>=0 ;j--)
         {
             btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[j];
@@ -110,22 +191,16 @@ SceneManager::SceneManager()
                 printf("world pos = %f,%f,%f\n",float(trans.getOrigin().getX()),float(trans.getOrigin().getY()),float(trans.getOrigin().getZ()));
             }
         }
-    }
-
-    // Main loop
-    while (true)
-    {
-        glfwSetTime(0.0);// Sets time to zero, so we know later how much time the frame took
-
-        glClear(GL_COLOR_BUFFER_BIT);
-
+        */
+        glFlush();
         glfwSwapBuffers();
 
-        // If ESC key is pressed or window is closed, break out of loop
-        if (glfwGetKey(GLFW_KEY_ESC) || !glfwGetWindowParam(GLFW_OPENED)) {break;}
+        //glfwSetTime(0.0);// Sets time to zero, so we know later how much time the frame took
+        //glfwGetTime();
 
-        glfwGetTime();
         glfwSleep(0.1);
+
+        if (glfwGetKey(GLFW_KEY_ESC) || !glfwGetWindowParam(GLFW_OPENED)) {break;}
     }
 
     //cleanup in the reverse order of creation/initialization
@@ -209,6 +284,9 @@ void SceneManager::initGl()
     }
 
     //fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 }
 
 

@@ -6,7 +6,7 @@
 class RigidBody : public btRigidBody
 {
 public:
-    RigidBody();
+    RigidBody(const btRigidBodyConstructionInfo &info);
 };
 
 #endif // RIGIDBODY_H
